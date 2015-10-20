@@ -1,0 +1,44 @@
+--- hello_world.c	2015-10-05 17:03:13.541329683 +0530
++++ hello_world_1.c	2015-10-08 18:01:08.320171026 +0530
+@@ -5,10 +5,10 @@
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Gadre Nayan A");
+-MODULE_DESCRIPTION("Task 01 Module Challenge");
++MODULE_DESCRIPTION("Task 08 Module Challenge");
+ 
+-struct dentry *dirret, *fileret;
+-int filevalue;
++struct dentry *dirret, *fileret, *jiffyret;
++int filevalue, jiffyvalue;
+ 
+ #define SIZE 13
+ #define EUDYPTULA_ID "03b1da8ba102"
+@@ -42,15 +42,27 @@
+                 return -EINVAL;
+ }
+ 
++ssize_t jiffy_read(struct file *fp, char __user *user, size_t size,
++loff_t *offs)
++{
++	return sprintf(user, "Jiffies = %lu\n", jiffies);
++}
++
+ static const struct file_operations fops_debug = {
+ 	.read = debugfs_read,
+ 	.write = debugfs_write
+ };
++
++static const struct file_operations fops_jiffy_debug = {
++	.read = jiffy_read,
++};
++
+ static int __init hello_init(void)
+ {
+ 	pr_debug("Hello world!\n");
+ 	dirret = debugfs_create_dir("eudyptula", NULL);
+ 	fileret = debugfs_create_file("id", 0666, dirret, &filevalue, &fops_debug);
++	jiffyret = debugfs_create_file("jiffies", 0444, dirret, &jiffyvalue, &fops_jiffy_debug);
+ 	return 0;
+ }
+ 
